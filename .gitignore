@@ -1,0 +1,7 @@
+node_modules
+.vscode*
+*.crt
+*.csr
+*.key
+*.key.org
+db.json

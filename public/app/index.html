@@ -12,7 +12,7 @@
 		<link href='//fonts.googleapis.com/css?family=Righteous' rel='stylesheet' type='text/css' />
 		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet" />
     
-		<link rel="stylesheet" href="/src/main_1.css" type='text/css' />		
+		<link rel="stylesheet" href="/css/main.css" type='text/css' />		
     
 		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!--[if lt IE 9]>
@@ -21,7 +21,7 @@
 		<![endif]-->
 		
 	</head>
-<body  ng-app="App" ng-controller="MainController" ng-init="profile()">
+<body  ng-app="App" ng-controller="MainController" ng-init="init()">
 
 <header class="navbar">
 	<div class="container-fluid expanded-panel">
@@ -35,87 +35,184 @@
 <!--End Header-->
 
 <!--Start Container-->
-<div id="main" class="container-fluid">
-	<div class="row">
-		<div id="sidebar-left" class="col-xs-2 col-sm-2">
-			<ul class="nav main-menu">
-				<li>
-					<a href="#" ng-model="profile" ng-click="showLogin()">
-						<i class="fa fa-search"></i>
-						<span class="hidden-xs">Login</span>
-					</a>
-				</li>
-				<li>
-					<a href="#" ng-model="profile" ng-click="showProfile()">
-						<i class="fa fa-search"></i>
-						<span class="hidden-xs">My Profile</span>
-					</a>
-				</li>
-				<li>
-					<a href="#" ng-model="profile" ng-click="showNews()">
-						<i class="fa fa-search"></i>
-						<span class="hidden-xs">News</span>
-					</a>
-				</li>								
-			</ul>
-		</div>
-		<!--Start Content-->
-		<div id="content" class="col-xs-10 col-sm-8" >
-			<div ng-switch="page">
-				<login ng-switch-when="login"></login>
-				<profile ng-switch-when="profile"></profile>
-				
-				<div ng-switch-when="news">
-					<div class="row">
-						<h1>Новое предложение! Переводы в Германию без комиссии!</h1><br />
-						<h3><p>Для того, чтобы воспользоваться данным предложением, Вам необходимо выполнить идентификацию в любом отделении нашего банка или удаленно в банках-партнерах!</p></h3>
-						
-					</div>
-				</div>
-
-				<div ng-switch-default >
-					<i class="fa fa-cog fa-spin fa-3x fa-fw" style="position: absolute; left:50%; top: 300px;"></i>
-					<span class="sr-only">Loading...</span>
-				</div>
-
-			</div>
-		</div>
-		<!--End Content-->
-	</div>
+<div class="container">
+    <div class="page-header">
+        <h1 id="timeline">Пройдите 4 простых шага и начните зарабатывать сейчас!</h1>
+    </div>
+    <ul class="timeline">
+        <li id="step1">
+          <div class="timeline-badge"><i class="glyphicon glyphicon-check"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Персональные данные</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Заполните форму с персональными данными для того, чтобы мы смогли идентифицировать Вас с помощью высокотехнологичного и безопасного сервиса на основе технологии <a href="http://blockchain.roseurobank.ru">blockchain</a>.</p>
+			  <p><button type="button" class="btn btn-primary greybutton" style="margin: 0px auto;" data-toggle="modal" data-target="#myModal" >Продолжить</button></p>
+			  <pre ng-if="saved.firstname">
+				  {{ saved | json }}
+			  </pre>	  
+            </div>
+          </div>
+        </li>
+        <li class="timeline-inverted" ng-if="step >= 2" id="step2">
+          <div class="timeline-badge warning"><i class="glyphicon glyphicon-credit-card"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Проверка данных</h4>
+            </div>
+            <div class="timeline-body">
+				<p>Выберите Банк из списка и пройдите авторизацию. Наш партнер подтвердит ваши персональные данные и мы сможем перейти к следующему шагу.</p>
+				<p><button type="button" class="btn btn-warning" style="margin: 0px auto;" data-toggle="modal" data-target="#login" >Продолжить</button></p>
+            </div>
+			<div class="form-group">			  
+				<pre ng-if="saved.code">
+					{{ saved.code }}
+				</pre>
+			  </div>
+          </div>
+        </li>
+        <li  ng-if="step >= 3" id="step3"> 
+          <div class="timeline-badge danger"><i class="glyphicon glyphicon-credit-card"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Регистрация карты</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Мы успешно выполнили вашу идентификацию.</p>
+			  <p>Введите данные вашей карты:</p>
+			  <div class="form-group">
+			    <label for="card">Карта</label>
+			    <input type="text" class="form-control" id="card" placeholder="Карта" ng-model="user.cardnumber">
+		      </div>
+			  <p><button type="button" class="btn btn-danger" style="margin: 0px auto;" ng-click="savecard()">Продолжить</button></p>
+            </div>
+          </div>
+        </li>               
+        <li class="timeline-inverted" ng-if="step >= 4"  id="step4">
+          <div class="timeline-badge success"><i class="glyphicon glyphicon-thumbs-up"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Поздравляем!</h4>
+            </div>
+            <div class="timeline-body">
+              <p>Мы прошли все шаги вместе и создали для вас удивительный продукт!</p>
+			  <p>Наслаждайтесь работой вместе снами! <a href="https://yandex.ru">Начать!</a></p>
+            </div>
+          </div>
+        </li>
+    </ul>
 </div>
-<!--End Container-->
+
+<!-- MODAL FORMS -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Персональные данные</h4>
+      </div>
+	  <form class="modal-body">
+		<div class="form-group">
+			<label for="firstname">Имя</label>
+			<input type="text" class="form-control" id="firstname" placeholder="Имя" ng-model="user.firstname">
+		</div>
+		<div class="form-group">
+			<label for="secondname">Отчество</label>
+			<input type="text" class="form-control" id="secondname" placeholder="Отчество" ng-model="user.secondname">
+		</div>
+		<div class="form-group">
+			<label for="lastname">Фамилия</label>
+			<input type="text" class="form-control" id="lastname" placeholder="Фамилия" ng-model="user.lastname">
+		</div>
+		<div class="form-group">  
+			<label for="passport">Номер паспорта</label>
+			<input type="text" class="form-control" id="passport" placeholder="Номер паспорта" ng-model="user.passport">
+		</div>
+		<div class="form-group">
+			<label for="phonenumber">Номер телефона</label>
+			<input type="text" class="form-control" id="phonenumber" placeholder="Номер телефона" ng-model="user.phonenumber">
+		</div>
+	  </form>      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="save()">&nbsp;Сохранить</button><button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="clear()">&nbsp;Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="loginLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Банки партнеры</h4>
+      </div>
+	  <form class="modal-body">
+		<div class="col-xl-3 col-lg-6">
+            <div class="panel panel-success">
+                <div class="panel-header">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-bank fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-xs-right">
+							<div class="huge">&nbsp;</div>
+                            <div>&nbsp;АКБ "РосЕвроБанк"</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <a class="text-success" href="https://localhost/oauth/account=0xa78ef98a8b8889832374&secret=dudsfasdf3434uisdfiu&redirect=https%3A%2F%2Fyandex.ru%2Fsearch%3Fq%3Dadf">
+                        <span class="pull-xs-left">View Details</span>
+                        <span class="pull-xs-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <div class="panel panel-warning">
+                <div class="panel-header panel-warning">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-building fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-xs-right">
+                            <div class="huge">&nbsp;</div>
+                            <div>НовыйБанк</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer panel-yellow">
+                    <a  class="text-warning" href="javascript:void(0);">
+                        <span class="pull-xs-left">View Details</span>
+                        <span class="pull-xs-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+	  </form>      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">&nbsp;Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.20/angular.js"></script>
 
-<script src="/js/crypto.js"></script>
-<script src="/js/app.js"></script>
-<script src="/js/dataAssistant.js"></script>
-<script src="/js/MainController.js"></script>
-<script src="/js/add.js"></script>
-<script src="/js/search.js"></script>
-<script src="/js/login.js"></script>
-<script src="/js/profile.js"></script>
-
-
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1849991008616531',
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
+<script src="js/app.js"></script>
+<script src="js/dataAssistant.js"></script>
+<script src="js/MainController.js"></script>
 
 </body>
 </html>
